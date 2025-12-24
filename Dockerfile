@@ -1,21 +1,20 @@
-﻿# Sử dụng hình ảnh SDK để build
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
+﻿FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build-env
 WORKDIR /app
 
-# Copy file dự án vào thư mục hiện tại của Docker
-COPY *.csproj ./
+# Chỉ copy file project và restore (Không dùng thư mục con)
+COPY MyFirstBackend.csproj ./
 RUN dotnet restore
 
-# Copy toàn bộ code còn lại và build
+# Copy toàn bộ file còn lại vào thư mục gốc của Docker
 COPY . ./
-RUN dotnet publish -c Release -o out
 
-# Sử dụng hình ảnh Runtime để chạy
+# Build trực tiếp file csproj thay vì file sln để tránh lỗi đường dẫn cũ
+RUN dotnet publish MyFirstBackend.csproj -c Release -o out
+
 FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build-env /app/out .
 
-# Cấu hình cổng cho Render
 ENV ASPNETCORE_URLS=http://+:8080
 EXPOSE 8080
 
