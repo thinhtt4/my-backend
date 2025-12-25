@@ -1,4 +1,7 @@
 ﻿
+using Microsoft.EntityFrameworkCore;
+using MyFirstBackend.Data;
+
 namespace MyFirstBackend
 {
     public class Program
@@ -13,11 +16,15 @@ namespace MyFirstBackend
                 options.AddPolicy("AllowReactApp",
                     policy =>
                     {
-                        policy.WithOrigins("https://my-frontend-six-ebon.vercel.app/") // Cổng của React (Vite)
+                        policy.WithOrigins("https://my-frontend-six-ebon.vercel.app", "http://localhost:5173") // Cổng của React (Vite)
                                .AllowAnyHeader()
                               .AllowAnyMethod();
                     });
             });
+            // Trước: options.UseSqlServer(...)
+            // Sau khi sửa:
+            builder.Services.AddDbContext<TodoDbContext>(options =>
+                options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // Add services to the container.
 
