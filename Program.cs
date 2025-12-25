@@ -13,7 +13,7 @@ namespace MyFirstBackend
                 options.AddPolicy("AllowReactApp",
                     policy =>
                     {
-                        policy.WithOrigins("https://tên-ứng-dụng-của-bạn.vercel.app") // Cổng của React (Vite)
+                        policy.WithOrigins("https://my-frontend-six-ebon.vercel.app/") // Cổng của React (Vite)
                                .AllowAnyHeader()
                               .AllowAnyMethod();
                     });
