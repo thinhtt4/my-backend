@@ -26,8 +26,23 @@ namespace MyFirstBackend
             builder.Services.AddDbContext<TodoDbContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-            // Add services to the container.
+            // Đọc chuỗi kết nối từ Environment Variable (đã thiết lập trên Render)
+            // Đọc chuỗi kết nối từ phần RedisCache -> ConnectionString
+            var redisConn = builder.Configuration.GetSection("RedisCache:ConnectionString").Value;
 
+            if (string.IsNullOrEmpty(redisConn))
+            {
+                // Log cảnh báo nếu không đọc được chuỗi kết nối
+                Console.WriteLine("CẢNH BÁO: Không tìm thấy chuỗi kết nối Redis!");
+            }
+
+            builder.Services.AddStackExchangeRedisCache(options =>
+            {
+                options.Configuration = redisConn;
+                options.InstanceName = "UserAuth_";
+            });
+
+            // Add services to the container.
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
